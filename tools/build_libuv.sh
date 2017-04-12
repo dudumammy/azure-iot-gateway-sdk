@@ -19,7 +19,7 @@ git clone https://github.com/libuv/libuv.git
 cd libuv
 git checkout -b v1.11.0 tags/v1.11.0
 sh autogen.sh
-./configure --prefix=$build_root/dist/
+./configure --prefix=$build_root/dist/ CFLAGS='-fPIC' CXXFLAGS='-fPIC'
 make -j $(nproc)
 make install
 popd
