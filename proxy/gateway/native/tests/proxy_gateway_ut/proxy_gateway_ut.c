@@ -37,7 +37,6 @@ static uint64_t negative_tests_to_skip;
 #include <nanomsg/pair.h>
 
 static TEST_MUTEX_HANDLE g_testByTest;
-static TEST_MUTEX_HANDLE g_dllByDll;
 
 static
 void *

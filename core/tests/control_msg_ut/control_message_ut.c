@@ -11,7 +11,6 @@
 #include "control_message.h"
 
 static TEST_MUTEX_HANDLE g_testByTest;
-static TEST_MUTEX_HANDLE g_dllByDll;
 
 #include "message.h"
 
