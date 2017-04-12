@@ -166,7 +166,7 @@ int update_entrypoint_with_launch_object(OUTPROCESS_LOADER_ENTRYPOINT * outproce
             else if (NULL == strcpy(outprocess_entry->process_argv[i], arg))
             {
                 LogError("Unable to copy argument[%lu] string.", i);
-                for (size_t j = i; 0 <= j; --j) { free(outprocess_entry->process_argv[j]); }
+                for (int j = i; 0 <= j; --j) { free(outprocess_entry->process_argv[j]); }
                 free(outprocess_entry->process_argv);
                 result = __LINE__;
                 break;

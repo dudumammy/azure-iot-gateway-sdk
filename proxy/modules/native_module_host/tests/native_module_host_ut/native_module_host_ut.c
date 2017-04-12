@@ -235,7 +235,6 @@ static void my_ModuleLoader_FreeModuleConfiguration(const MODULE_LOADER* loader,
 
 
 static TEST_MUTEX_HANDLE g_testByTest;
-static TEST_MUTEX_HANDLE g_dllByDll;
 
 DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 

@@ -149,7 +149,6 @@ MOCK_FUNCTION_END(0);
 //=============================================================================
 
 static TEST_MUTEX_HANDLE g_testByTest;
-static TEST_MUTEX_HANDLE g_dllByDll;
 const MODULE_API_1 Outprocess_Module_API_all =
 {
 	{ MODULE_API_VERSION_1 },
@@ -597,7 +596,7 @@ TEST_FUNCTION(OutprocessModuleLoader_Load_returns_NULL_when_loader_type_is_not_O
 TEST_FUNCTION(OutprocessModuleLoader_Load_returns_NULL_when_control_id_is_NULL)
 {
 	// arrange
-	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { OUTPROCESS_LOADER_ACTIVATION_NONE, NULL, (STRING_HANDLE)0x42, 0 };
+	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { OUTPROCESS_LOADER_ACTIVATION_NONE, NULL, (STRING_HANDLE)0x42, 0, NULL, 0 };
 	MODULE_LOADER loader =
 	{
 		OUTPROCESS,
@@ -615,7 +614,7 @@ TEST_FUNCTION(OutprocessModuleLoader_Load_returns_NULL_when_control_id_is_NULL)
 TEST_FUNCTION(OutprocessModuleLoader_Load_returns_NULL_when_activation_type_is_not_NONE)
 {
 	// arrange
-	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { (OUTPROCESS_LOADER_ACTIVATION_TYPE)0x42, (STRING_HANDLE)0x42, (STRING_HANDLE)0x42, 0};
+	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { (OUTPROCESS_LOADER_ACTIVATION_TYPE)0x42, (STRING_HANDLE)0x42, (STRING_HANDLE)0x42, 0, NULL, 0};
 	MODULE_LOADER loader =
 	{
 		OUTPROCESS,
@@ -738,7 +737,7 @@ TEST_FUNCTION(OutprocessModuleLoader_GetModuleApi_returns_NULL_when_moduleLibrar
 TEST_FUNCTION(OutprocessModuleLoader_GetModuleApi_succeeds)
 {
     // arrange
-	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { OUTPROCESS_LOADER_ACTIVATION_NONE, (STRING_HANDLE)0x42, (STRING_HANDLE)0x42, 0};
+	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { OUTPROCESS_LOADER_ACTIVATION_NONE, (STRING_HANDLE)0x42, (STRING_HANDLE)0x42, 0, NULL, 0};
 	MODULE_LOADER loader =
 	{
 		OUTPROCESS,
@@ -775,7 +774,7 @@ TEST_FUNCTION(OutprocessModuleLoader_Unload_does_nothing_when_moduleLibraryHandl
 TEST_FUNCTION(OutprocessModuleLoader_Unload_frees_things)
 {
     // arrange
-	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { OUTPROCESS_LOADER_ACTIVATION_NONE, (STRING_HANDLE)0x42, (STRING_HANDLE)0x42, 0};
+	OUTPROCESS_LOADER_ENTRYPOINT entrypoint = { OUTPROCESS_LOADER_ACTIVATION_NONE, (STRING_HANDLE)0x42, (STRING_HANDLE)0x42, 0, NULL, 0};
 	MODULE_LOADER loader =
 	{
 		OUTPROCESS,
@@ -1144,6 +1143,8 @@ TEST_FUNCTION(OutprocessModuleLoader_BuildModuleConfiguration_success_with_msg_u
 		OUTPROCESS_LOADER_ACTIVATION_NONE,
 		STRING_construct("control_id"),
 		STRING_construct("message_id"),
+		0,
+		NULL,
 		0
 	};
 	STRING_HANDLE mc = STRING_construct("message config");
@@ -1185,6 +1186,8 @@ TEST_FUNCTION(OutprocessModuleLoader_BuildModuleConfiguration_success_with_no_ms
 		STRING_construct("control_id"),
 		NULL,
 		0,
+		NULL,
+		0
 	};
 	STRING_HANDLE mc = STRING_construct("message config");
 
@@ -1218,6 +1221,8 @@ TEST_FUNCTION(OutprocessModuleLoader_BuildModuleConfiguration_returns_null_on_mo
 		OUTPROCESS_LOADER_ACTIVATION_NONE,
 		STRING_construct("control_id"),
 		STRING_construct("message_id"),
+		0,
+		NULL,
 		0
 	};
 	STRING_HANDLE mc = STRING_construct("message config");
@@ -1261,6 +1266,8 @@ TEST_FUNCTION(OutprocessModuleLoader_BuildModuleConfiguration_returns_null_on_ms
 		STRING_construct("control_id"),
 		NULL,
 		0,
+		NULL,
+		0
 	};
 	STRING_HANDLE mc = STRING_construct("message config");
 
@@ -1296,6 +1303,8 @@ TEST_FUNCTION(OutprocessModuleLoader_BuildModuleConfiguration_returns_null_on_ma
 		STRING_construct("control_id"),
 		NULL,
 		0,
+		NULL,
+		0
 	};
 	STRING_HANDLE mc = STRING_construct("message config");
 
@@ -1337,6 +1346,8 @@ TEST_FUNCTION(OutprocessModuleLoader_FreeModuleConfiguration_frees_stuff)
 		STRING_construct("control_id"),
 		NULL,
 		0,
+		NULL,
+		0
 	};
 	STRING_HANDLE mc = STRING_construct("message config");
 
@@ -1617,7 +1628,6 @@ TEST_FUNCTION(OutprocessLoader_JoinChildProcesses_SCENARIO_unable_to_create_tick
     const size_t PROCESS_COUNT = ((rand() % 5) + 1);
 
     int result;
-    tickcounter_ms_t injected_ms = 0;
     char * process_argv[] = {
         "program.exe",
         "control.id"
@@ -1658,7 +1668,7 @@ TEST_FUNCTION(OutprocessLoader_JoinChildProcesses_SCENARIO_unable_to_create_tick
         .SetReturn(__LINE__);
     EXPECTED_CALL(tickcounter_create())
         .SetReturn(MOCK_TICKCOUNTER);
-    
+
     for (size_t i = 0; i < PROCESS_COUNT; ++i) {
         STRICT_EXPECTED_CALL(VECTOR_element(MOCK_UV_PROCESS_VECTOR, i))
             .SetReturn(&MOCK_UV_PROCESS);
@@ -1667,7 +1677,7 @@ TEST_FUNCTION(OutprocessLoader_JoinChildProcesses_SCENARIO_unable_to_create_tick
             .SetReturn(i);
     }
     STRICT_EXPECTED_CALL(tickcounter_destroy(MOCK_TICKCOUNTER));
-    
+
     STRICT_EXPECTED_CALL(ThreadAPI_Join(MOCK_THREAD_HANDLE, IGNORED_PTR_ARG))
         .IgnoreArgument(2)
         .SetFailReturn(THREADAPI_ERROR)
@@ -1678,7 +1688,7 @@ TEST_FUNCTION(OutprocessLoader_JoinChildProcesses_SCENARIO_unable_to_create_tick
         STRICT_EXPECTED_CALL(gballoc_free(MOCK_UV_PROCESS));
     }
     STRICT_EXPECTED_CALL(VECTOR_destroy(MOCK_UV_PROCESS_VECTOR));
-    
+
     // Act
     OutprocessLoader_JoinChildProcesses();
 
@@ -1876,8 +1886,6 @@ TEST_FUNCTION(OutprocessLoader_JoinChildProcesses_SCENARIO_unable_to_mark_curren
 TEST_FUNCTION(OutprocessLoader_SpawnChildProcesses_SCENARIO_no_processes_scheduled)
 {
     // Arrange
-    static const bool FIRST_CALL = true;
-
     int result;
 
     // Expected call listing
