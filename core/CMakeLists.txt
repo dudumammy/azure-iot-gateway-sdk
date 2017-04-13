@@ -190,7 +190,7 @@ if(${enable_native_remote_modules} OR ${enable_java_remote_modules})
     include_directories( ../proxy/outprocess/inc)
     include_directories( ../proxy/message/inc)
 
-    include_directories(${CMAKE_SOURCE_DIR}/build_libuv/dist/inc)
+    include_directories(${CMAKE_SOURCE_DIR}/build_libuv/dist/include)
     link_directories(${CMAKE_SOURCE_DIR}/build_libuv/dist/lib)
 endif()
 
