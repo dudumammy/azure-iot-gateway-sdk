@@ -27,7 +27,6 @@
 //=============================================================================
 
 static TEST_MUTEX_HANDLE g_testByTest;
-static TEST_MUTEX_HANDLE g_dllByDll;
 
 static bool malloc_will_fail = false;
 
