@@ -24,7 +24,7 @@ static int parse_uint32_t(const unsigned char* source, size_t sourceSize, size_t
     int result;
     if (position + 4 > sourceSize)
     {
-		/*Codes_SRS_CONTROL_MESSAGE_17_018: [ Reading past the end of the byte array shall cause this function to fail and return NULL. ]*/
+        /*Codes_SRS_CONTROL_MESSAGE_17_018: [ Reading past the end of the byte array shall cause this function to fail and return NULL. ]*/
         LogError("unable to parse a int32_t because it would go past the end of the source");
         result = __LINE__;
     }
@@ -52,36 +52,36 @@ static int parse_memory_chunk(const unsigned char* source, size_t sourceSize, si
         position += current_parsed;
         if (position + chunk_size > sourceSize)
         {
-			/*Codes_SRS_CONTROL_MESSAGE_17_018: [ Reading past the end of the byte array shall cause this function to fail and return NULL. ]*/
+            /*Codes_SRS_CONTROL_MESSAGE_17_018: [ Reading past the end of the byte array shall cause this function to fail and return NULL. ]*/
             LogError("unable to extract memory because it would go past end of source");
             result = __LINE__;
         }
         else
         {
-			if (chunk_size == 0)
-			{
-				*value = NULL;
-				*parsed = current_parsed;
-				*size = chunk_size;
-				result = 0;
-			}
-			else
-			{
-				/* allocate 1 more for null-termination */
-				*value = (unsigned char *)malloc(chunk_size);
-				if (*value == NULL)
-				{
-					LogError("unable to allocate memory chunk");
-					result = __LINE__;
-				}
-				else
-				{
-					memcpy(*value, source + position, chunk_size);
-					*parsed = current_parsed + chunk_size;
-					*size = chunk_size;
-					result = 0;
-				}
-			}
+            if (chunk_size == 0)
+            {
+                *value = NULL;
+                *parsed = current_parsed;
+                *size = chunk_size;
+                result = 0;
+            }
+            else
+            {
+                /* allocate 1 more for null-termination */
+                *value = (unsigned char *)malloc(chunk_size);
+                if (*value == NULL)
+                {
+                    LogError("unable to allocate memory chunk");
+                    result = __LINE__;
+                }
+                else
+                {
+                    memcpy(*value, source + position, chunk_size);
+                    *parsed = current_parsed + chunk_size;
+                    *size = chunk_size;
+                    result = 0;
+                }
+            }
         }
     }
     return result;
@@ -111,11 +111,11 @@ static void free_create_message_contents(CONTROL_MESSAGE_MODULE_CREATE * create_
 
 int parse_create_message(const unsigned char* source, size_t sourceSize, size_t position, int32_t *parsed, CONTROL_MESSAGE_MODULE_CREATE * create_msg)
 {
+    (void)parsed;
     int result;
     int32_t current_parsed; /*reused in all parsings*/
-    (void)parsed;
 
-	init_create_message_contents(create_msg); /* initialize to NULL for easy cleanup */
+    init_create_message_contents(create_msg); /* initialize to NULL for easy cleanup */
     /*
      * Parse the number of uris
      * We already know we won't extend past the end of the array -
@@ -134,12 +134,12 @@ int parse_create_message(const unsigned char* source, size_t sourceSize, size_t 
         create_msg->uri.uri_type = (uint8_t)source[position++];
 
         /*Codes_SRS_CONTROL_MESSAGE_17_013: [ This function shall allocate uri_size bytes for the url. ]*/
-	if (parse_memory_chunk(source,
+        if (parse_memory_chunk(source,
             sourceSize,
             position,
             &current_parsed,
             &(create_msg->uri.uri_size),
-            (unsigned char **)&(create_msg->uri.uri)) != 0)
+            (unsigned char**)(&(create_msg->uri.uri))) != 0)
         {
             LogError("unable to parse a uri");
             result = __LINE__;
@@ -225,8 +225,8 @@ int parse_create_message(const unsigned char* source, size_t sourceSize, size_t 
 CONTROL_MESSAGE * ControlMessage_CreateFromByteArray(const unsigned char* source, size_t size)
 {
     CONTROL_MESSAGE * result;
-	/*Codes_SRS_CONTROL_MESSAGE_17_001: [ If source is NULL, then this function shall return NULL. ]*/
-	/*Codes_SRS_CONTROL_MESSAGE_17_002: [ If size is smaller than 8, then this function shall return NULL. ]*/
+    /*Codes_SRS_CONTROL_MESSAGE_17_001: [ If source is NULL, then this function shall return NULL. ]*/
+    /*Codes_SRS_CONTROL_MESSAGE_17_002: [ If size is smaller than 8, then this function shall return NULL. ]*/
     if (
         (source == NULL) ||
         (size < BASE_MESSAGE_SIZE)
@@ -237,12 +237,12 @@ CONTROL_MESSAGE * ControlMessage_CreateFromByteArray(const unsigned char* source
     }
     else
     {
-		/*Codes_SRS_CONTROL_MESSAGE_17_003: [ If the first two bytes of source are not 0xA1 0x6C then this function shall fail and return NULL. ]*/
-		/*Codes_SRS_CONTROL_MESSAGE_17_004: [ If the version is not equal to CONTROL_MESSAGE_VERSION_CURRENT, then this function shall return NULL. ]*/
+        /*Codes_SRS_CONTROL_MESSAGE_17_003: [ If the first two bytes of source are not 0xA1 0x6C then this function shall fail and return NULL. ]*/
+        /*Codes_SRS_CONTROL_MESSAGE_17_004: [ If the version is not equal to CONTROL_MESSAGE_VERSION_CURRENT, then this function shall return NULL. ]*/
         if (
             (source[0] != FIRST_MESSAGE_BYTE) ||
             (source[1] != SECOND_MESSAGE_BYTE) ||
-			((uint8_t)source[2] != CONTROL_MESSAGE_VERSION_CURRENT) 
+			((uint8_t)source[2] != CONTROL_MESSAGE_VERSION_CURRENT)
 			)
         {
             LogError("byte array is not a control message serialization");
@@ -281,7 +281,7 @@ CONTROL_MESSAGE * ControlMessage_CreateFromByteArray(const unsigned char* source
                     }
                     else
                     {
-						/*Codes_SRS_CONTROL_MESSAGE_17_008: [ This function shall allocate a CONTROL_MESSAGE_MODULE_CREATE structure. ]*/
+                        /*Codes_SRS_CONTROL_MESSAGE_17_008: [ This function shall allocate a CONTROL_MESSAGE_MODULE_CREATE structure. ]*/
                         result = (CONTROL_MESSAGE *)malloc(sizeof(CONTROL_MESSAGE_MODULE_CREATE));
                         if (result != NULL)
                         {
@@ -295,7 +295,7 @@ CONTROL_MESSAGE * ControlMessage_CreateFromByteArray(const unsigned char* source
                                     &parsed,
                                     (CONTROL_MESSAGE_MODULE_CREATE*)result) != 0)
                             {
-								/*Codes_SRS_CONTROL_MESSAGE_17_022: [ This function shall release all allocated memory upon failure. ]*/
+                                /*Codes_SRS_CONTROL_MESSAGE_17_022: [ This function shall release all allocated memory upon failure. ]*/
                                 free(result);
                                 result = NULL;
                             }
@@ -304,66 +304,66 @@ CONTROL_MESSAGE * ControlMessage_CreateFromByteArray(const unsigned char* source
                 }
                 else if (messageType == CONTROL_MESSAGE_TYPE_MODULE_REPLY)
                 {
-					/*Codes_SRS_CONTROL_MESSAGE_17_020: [ If the total message size is not at least 9 bytes, then this function shall fail and return NULL. ]*/
+                    /*Codes_SRS_CONTROL_MESSAGE_17_020: [ If the total message size is not at least 9 bytes, then this function shall fail and return NULL. ]*/
                     if (size < BASE_CREATE_REPLY_SIZE)
                     {
                         result = NULL;
                     }
                     else
                     {
-						/*Codes_SRS_CONTROL_MESSAGE_17_019: [ This function shall allocate a CONTROL_MESSAGE_MODULE_REPLY structure. ]*/
+                        /*Codes_SRS_CONTROL_MESSAGE_17_019: [ This function shall allocate a CONTROL_MESSAGE_MODULE_REPLY structure. ]*/
                         result = (CONTROL_MESSAGE *)malloc(sizeof(CONTROL_MESSAGE_MODULE_REPLY));
                         if (result != NULL)
                         {
-							/*Codes_SRS_CONTROL_MESSAGE_17_024: [ Upon valid reading of the byte stream, this function shall assign the message version and type into the CONTROL_MESSAGE base structure. ]*/
-							result->version = messageVersion;
+                            /*Codes_SRS_CONTROL_MESSAGE_17_024: [ Upon valid reading of the byte stream, this function shall assign the message version and type into the CONTROL_MESSAGE base structure. ]*/
+                            result->version = messageVersion;
                             result->type = messageType;
-							/*Codes_SRS_CONTROL_MESSAGE_17_021: [ This function shall read the status from the byte stream. ]*/
-                            ((CONTROL_MESSAGE_MODULE_REPLY*)result)->status = 
-                                (uint8_t)source[currentPosition];
+                            /*Codes_SRS_CONTROL_MESSAGE_17_021: [ This function shall read the status from the byte stream. ]*/
+                            ((CONTROL_MESSAGE_MODULE_REPLY*)result)->status = (uint8_t)source[currentPosition];
                         }
                     }
                 }
                 else if (
-                        (messageType == CONTROL_MESSAGE_TYPE_MODULE_START) || 
+                        (messageType == CONTROL_MESSAGE_TYPE_MODULE_START) ||
                         (messageType == CONTROL_MESSAGE_TYPE_MODULE_DESTROY)
                         )
                 {
-					/*Codes_SRS_CONTROL_MESSAGE_17_023: [ This function shall allocate a CONTROL_MESSAGE structure. ]*/
+                    /*Codes_SRS_CONTROL_MESSAGE_17_023: [ This function shall allocate a CONTROL_MESSAGE structure. ]*/
                     result = (CONTROL_MESSAGE *)malloc(sizeof(CONTROL_MESSAGE));
                     if (result != NULL)
                     {
-						/*Codes_SRS_CONTROL_MESSAGE_17_024: [ Upon valid reading of the byte stream, this function shall assign the message version and type into the CONTROL_MESSAGE base structure. ]*/
+                        /*Codes_SRS_CONTROL_MESSAGE_17_024: [ Upon valid reading of the byte stream, this function shall assign the message version and type into the CONTROL_MESSAGE base structure. ]*/
                         result->version = messageVersion;
                         result->type = messageType;
                     }
                 }
                 else
                 {
-					/*Codes_SRS_CONTROL_MESSAGE_17_007: [ This function shall return NULL if the type is not a valid enum value of CONTROL_MESSAGE_TYPE or CONTROL_MESSAGE_TYPE_ERROR. ]*/
+                    /*Codes_SRS_CONTROL_MESSAGE_17_007: [ This function shall return NULL if the type is not a valid enum value of CONTROL_MESSAGE_TYPE or CONTROL_MESSAGE_TYPE_ERROR. ]*/
                     LogError("message is an unrecognized type: %s", ENUM_TO_STRING(CONTROL_MESSAGE_TYPE, messageType));
                     result = NULL;
                 }
             }
         }
     }
-	/*Codes_SRS_CONTROL_MESSAGE_17_025: [ Upon success, this function shall return a valid pointer to the CONTROL_MESSAGE base. ]*/
-	/*Codes_SRS_CONTROL_MESSAGE_17_036: [ This function shall return NULL upon failure. ]*/
+
+    /*Codes_SRS_CONTROL_MESSAGE_17_025: [ Upon success, this function shall return a valid pointer to the CONTROL_MESSAGE base. ]*/
+    /*Codes_SRS_CONTROL_MESSAGE_17_036: [ This function shall return NULL upon failure. ]*/
     return result;
 }
 
 void ControlMessage_Destroy(CONTROL_MESSAGE * message)
 {
-	/*Codes_SRS_CONTROL_MESSAGE_17_026: [ If message is NULL this function shall do nothing. ]*/
+    /*Codes_SRS_CONTROL_MESSAGE_17_026: [ If message is NULL this function shall do nothing. ]*/
     if (message != NULL)
     {
-		/*Codes_SRS_CONTROL_MESSAGE_17_027: [ This function shall release all memory allocated in this structure. ]*/
+        /*Codes_SRS_CONTROL_MESSAGE_17_027: [ This function shall release all memory allocated in this structure. ]*/
         if (message->type == CONTROL_MESSAGE_TYPE_MODULE_CREATE)
         {
-			/*Codes_SRS_CONTROL_MESSAGE_17_028: [ For a CONTROL_MESSAGE_MODULE_CREATE message type, all memory allocated shall be defined as all the memory allocated by ControlMessage_CreateFromByteArray. ]*/
+            /*Codes_SRS_CONTROL_MESSAGE_17_028: [ For a CONTROL_MESSAGE_MODULE_CREATE message type, all memory allocated shall be defined as all the memory allocated by ControlMessage_CreateFromByteArray. ]*/
             free_create_message_contents((CONTROL_MESSAGE_MODULE_CREATE *)message);
         }
-		/*Codes_SRS_CONTROL_MESSAGE_17_030: [ This function shall release message for all message types. ]*/
+        /*Codes_SRS_CONTROL_MESSAGE_17_030: [ This function shall release message for all message types. ]*/
         free(message);
     }
 }
@@ -373,8 +373,8 @@ static int32_t create_message_get_size(CONTROL_MESSAGE * message)
     int32_t result;
 
     CONTROL_MESSAGE_MODULE_CREATE * create_msg = (CONTROL_MESSAGE_MODULE_CREATE*)message;
-    result = 
-          1  /* gateway_message_version */
+    result =
+          1 /* gateway_message_version */
         + 1 /* uri_type */
 		+ 4 /* uri_size */
         + 4; /* args_size */
@@ -390,7 +390,7 @@ static int32_t create_message_get_size(CONTROL_MESSAGE * message)
             (int32_t)strlen(create_msg->args)
             + 1; /* for null char */
     }
-        
+
     return result;
 }
 
@@ -422,10 +422,10 @@ static void create_message_serialize(CONTROL_MESSAGE_MODULE_CREATE * create_msg,
 int32_t ControlMessage_ToByteArray(CONTROL_MESSAGE * message, unsigned char* buf, int32_t size)
 {
     int32_t result;
-    if (message == NULL) 
+    if (message == NULL)
     {
-		/*Codes_SRS_CONTROL_MESSAGE_17_031: [ If message is NULL, then this function shall return -1. ]*/
-		LogError("invalid (NULL) message parameter detected buffer=[%p], size=[%d]", message, size);
+        /*Codes_SRS_CONTROL_MESSAGE_17_031: [ If message is NULL, then this function shall return -1. ]*/
+        LogError("invalid (NULL) message parameter detected buffer=[%p], size=[%d]", message, size);
         result = -1;
     }
     else if (
@@ -433,14 +433,14 @@ int32_t ControlMessage_ToByteArray(CONTROL_MESSAGE * message, unsigned char* buf
         (size != 0)
         )
     {
-		/*Codes_SRS_CONTROL_MESSAGE_17_032: [ If buf is NULL, but size is not zero, then this function shall return -1. ]*/
+        /*Codes_SRS_CONTROL_MESSAGE_17_032: [ If buf is NULL, but size is not zero, then this function shall return -1. ]*/
         LogError("Null buffer sent with a specific size buffer=[%p], size=[%d]", message, size);
         result = -1;
     }
     else
     {
         //MESSAGE_HANDLE_DATA* messageData = (MESSAGE_HANDLE_DATA*)message;
-		/*Codes_SRS_CONTROL_MESSAGE_17_033: [ This function shall populate the memory with values as indicated in control messages in out process modules. ]*/
+        /*Codes_SRS_CONTROL_MESSAGE_17_033: [ This function shall populate the memory with values as indicated in control messages in out process modules. ]*/
         size_t byteArraySize =
             + 2 /* header */
             + 1 /* message type*/
@@ -459,7 +459,7 @@ int32_t ControlMessage_ToByteArray(CONTROL_MESSAGE * message, unsigned char* buf
             byteArraySize += 1; /* status */
         }
         else if (
-                 (message->type == CONTROL_MESSAGE_TYPE_MODULE_START) || 
+                 (message->type == CONTROL_MESSAGE_TYPE_MODULE_START) ||
                  (message->type == CONTROL_MESSAGE_TYPE_MODULE_DESTROY)
                 )
         {
@@ -468,7 +468,7 @@ int32_t ControlMessage_ToByteArray(CONTROL_MESSAGE * message, unsigned char* buf
         }
         else
         {
-			/*Codes_SRS_CONTROL_MESSAGE_17_034: [ If any of the above steps fails then this function shall fail and return -1. ]*/
+            /*Codes_SRS_CONTROL_MESSAGE_17_034: [ If any of the above steps fails then this function shall fail and return -1. ]*/
             LogError("message is an unrecognized type: %s", ENUM_TO_STRING(CONTROL_MESSAGE_TYPE, message->type));
             result = -1;
         }
@@ -481,8 +481,8 @@ int32_t ControlMessage_ToByteArray(CONTROL_MESSAGE * message, unsigned char* buf
             }
             else if (byteArraySize > (size_t)size)
             {
-				/*Codes_SRS_CONTROL_MESSAGE_17_034: [ If any of the above steps fails then this function shall fail and return -1. ]*/
-				LogError("message is %u bytes, won't fit in buffer of %u bytes", byteArraySize, size);
+                /*Codes_SRS_CONTROL_MESSAGE_17_034: [ If any of the above steps fails then this function shall fail and return -1. ]*/
+                LogError("message is %u bytes, won't fit in buffer of %u bytes", byteArraySize, size);
                 result = -1;
             }
             else
@@ -500,8 +500,7 @@ int32_t ControlMessage_ToByteArray(CONTROL_MESSAGE * message, unsigned char* buf
                 buf[5] = (byteArraySize >> 16) & 0xFF;
                 buf[6] = (byteArraySize >> 8) & 0xFF;
                 buf[7] = (byteArraySize) & 0xFF;
-                
-                // 
+
                 currentPosition = 8;
                 if (message->type == CONTROL_MESSAGE_TYPE_MODULE_CREATE)
                 {
@@ -509,11 +508,10 @@ int32_t ControlMessage_ToByteArray(CONTROL_MESSAGE * message, unsigned char* buf
                 }
                 else if (message->type == CONTROL_MESSAGE_TYPE_MODULE_REPLY)
                 {
-                    CONTROL_MESSAGE_MODULE_REPLY * reply_msg = 
-                            (CONTROL_MESSAGE_MODULE_REPLY*)message;
+                    CONTROL_MESSAGE_MODULE_REPLY * reply_msg = (CONTROL_MESSAGE_MODULE_REPLY*)message;
                     buf[currentPosition++] = (reply_msg->status);
                 }
-				/*Codes_SRS_CONTROL_MESSAGE_17_035: [ Upon success this function shall return the byte array size.*/
+                /*Codes_SRS_CONTROL_MESSAGE_17_035: [ Upon success this function shall return the byte array size.*/
                 result = byteArraySize;
             }
         }
