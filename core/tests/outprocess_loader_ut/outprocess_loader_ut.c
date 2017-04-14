@@ -148,6 +148,9 @@ MOCK_FUNCTION_END(0);
 //Globals
 //=============================================================================
 
+#ifdef WIN32
+static TEST_MUTEX_HANDLE g_dllByDll;
+#endif
 static TEST_MUTEX_HANDLE g_testByTest;
 const MODULE_API_1 Outprocess_Module_API_all =
 {
@@ -973,8 +976,6 @@ TEST_FUNCTION(OutprocessModuleLoader_ParseEntrypointFromJson_returns_NULL_when_u
     STRICT_EXPECTED_CALL(json_object_get_string((JSON_Object*)0x43, "message.id"))
 		.SetReturn(NULL);
 	STRICT_EXPECTED_CALL(gballoc_malloc(sizeof(OUTPROCESS_LOADER_ENTRYPOINT)));
-	STRICT_EXPECTED_CALL(json_object_get_number((JSON_Object*)0x43, "timeout"))
-		.SetReturn(0);
 	STRICT_EXPECTED_CALL(STRING_construct(control_id))
 		.SetReturn(NULL);
 	STRICT_EXPECTED_CALL(gballoc_free(IGNORED_PTR_ARG))
@@ -1019,11 +1020,10 @@ TEST_FUNCTION(OutprocessModuleLoader_ParseEntrypointFromJson_succeeds)
 		.SetReturn(NULL);
     expected_calls_validate_launch_arguments(&grace_period_ms);
 	STRICT_EXPECTED_CALL(gballoc_malloc(sizeof(OUTPROCESS_LOADER_ENTRYPOINT)));
-	STRICT_EXPECTED_CALL(URL_EncodeString(control_id));
+	STRICT_EXPECTED_CALL(STRING_construct(control_id));
     expected_calls_update_entrypoint_with_launch_object();
 	STRICT_EXPECTED_CALL(json_object_get_number((JSON_Object*)0x43, "timeout"))
 		.SetReturn(2000);
-	STRICT_EXPECTED_CALL(STRING_construct(control_id));
 	STRICT_EXPECTED_CALL(STRING_construct(NULL));
 
 	// act

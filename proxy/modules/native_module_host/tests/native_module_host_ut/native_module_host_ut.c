@@ -14,11 +14,14 @@
 #include "umocktypes_stdint.h"
 #include "azure_c_shared_utility/macro_utils.h"
 
+
+#ifdef WIN32
+static TEST_MUTEX_HANDLE g_dllByDll;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
 
 static bool malloc_will_fail = false;
 static size_t malloc_fail_count = 0;

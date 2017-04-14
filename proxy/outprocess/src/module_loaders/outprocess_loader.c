@@ -537,7 +537,7 @@ static void* OutprocessModuleLoader_ParseEntrypointFromJson(const struct MODULE_
             config->process_argv = NULL;
 
             /*Codes_SRS_OUTPROCESS_LOADER_17_018: [ This function shall assign the entrypoint control_id to the string value of "control.id" in json, NULL if not present. ] */
-            else if (NULL == (config->control_id = STRING_construct(controlId)))
+            if (NULL == (config->control_id = STRING_construct(controlId)))
             {
                 /*Codes_SRS_OUTPROCESS_LOADER_17_021: [ This function shall return NULL if any calls fails. ] */
                 LogError("Could not allocate loader args string");

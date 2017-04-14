@@ -38,8 +38,8 @@ call vcbuild.bat release
 popd
 
 rem Create a 'dist' folder where the includes/libs live
-mkdir dist\inc
-copy libuv\include\*.h dist\inc
+mkdir dist\include
+copy libuv\include\*.h dist\include
 
 mkdir dist\lib
 copy libuv\Release\lib\libuv.lib dist\lib
@@ -51,6 +51,6 @@ set "LIBUV_INCLUDE=%build-root%\dist\inc"
 set "LIBUV_LIB=%build-root%\dist\lib"
 
 rem Set environment variables for where the include/lib files can be found
-@endlocal & set LIBUV_INCLUDE=%build-root%\dist\inc\ & set LIBUV_LIB=%build-root%\dist\lib\
+@endlocal & set LIBUV_INCLUDE=%build-root%\dist\include\ & set LIBUV_LIB=%build-root%\dist\lib\
 
 goto :eof
